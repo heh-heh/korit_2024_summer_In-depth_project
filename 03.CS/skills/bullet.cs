@@ -16,7 +16,7 @@ public class bullet : MonoBehaviour
     {   
         if(gameObject.tag != "Player"){
             monster = skill_op.sp_pos.GetComponent<monster>();
-            moveD = monster.monster_now_stat.move_D;
+            if(monster != null)moveD = monster.monster_now_stat.move_D;
         }
     }
     // Update is called once per frame

@@ -34,7 +34,7 @@ public class skills : MonoBehaviour
         pc = GetComponent<player>();
         
         animator = GetComponent<Animator>();
-        co_time = attect_delay;
+        co_time = 0;
         
     }
     void Update()
@@ -52,7 +52,6 @@ public class skills : MonoBehaviour
     
     public void on_attack(InputAction.CallbackContext context){
         if (context.performed && !player_stat.is_skill) {
-            // if(!is_attect && attect_combo>0) attect_combo = 0;
             if (context.interaction is PressInteraction) {
                 is_attect = true;
                 if (attect_combo <= 0) {
@@ -65,7 +64,7 @@ public class skills : MonoBehaviour
                     animator.SetTrigger("next_at");
                 }
                 StartCoroutine(use_Skills_delay(skill_ID[attect_combo]));
-                co_time = (sk_manager.skill_dict[skill_ID[attect_combo]].after_delay+sk_manager.skill_dict[skill_ID[attect_combo]].life_time)*1.2f;
+                co_time = (sk_manager.skill_dict[skill_ID[attect_combo]].after_delay+sk_manager.skill_dict[skill_ID[attect_combo]].life_time)*attect_delay;
                 attect_combo = attect_combo >= 2 ? 0 : attect_combo + 1;
             }
         }
@@ -90,12 +89,12 @@ public class skills : MonoBehaviour
     
     public IEnumerator use_Skills_delay(string ID){
         pc.player_stat.is_skill = true;
-        Debug.Log("ID : " + ID);
         if(sk_manager.skill_dict[ID].before_delay > 0){
             for(float i = sk_manager.skill_dict[ID].before_delay; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);
         } 
         sk_manager.use_skill(ID,gameObject);
+        Debug.Log("ID : " + ID);
         if(sk_manager.skill_dict[ID].life_time > 0 && (sk_manager.skill_dict[ID].skill_type == 0 || sk_manager.skill_dict[ID].skill_type == 2)){
             for(float i = sk_manager.skill_dict[ID].life_time; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);
