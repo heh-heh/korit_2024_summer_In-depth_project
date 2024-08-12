@@ -67,7 +67,7 @@ public class player : MonoBehaviour
         ray_pos.Add(transform.position + Vector3.up * 1.5f);
         ray_pos.Add(transform.position + Vector3.up * 3f);
         foreach(Vector3 pos in ray_pos) {
-            Debug.DrawRay(pos, transform.forward * 5, Color.green);
+            Debug.DrawRay(pos, transform.forward * 1.5f, Color.green);
             if(Physics.Raycast(pos,transform.forward,out RaycastHit hit, 1.5f)){
                 if(hit.collider.CompareTag("Wall")) is_boder = true;
                 
@@ -76,11 +76,12 @@ public class player : MonoBehaviour
         }
     }
     public void move_rot(){
-        // player_stat.move_D = new Vector3(input.x, 0.0f, input.y);
-        // if(!mouse_ck)rotation = Quaternion.LookRotation(get_mouse_pos() - transform.position);
-        if(!mouse_ck)transform.LookAt(get_mouse_pos(true));
-        // StartCoroutine(rot_skills(rotation));
-        // transform.Translate(Vector3.forward * player_stat.speed * Time.deltaTime);
+        if(!mouse_ck){
+            player_stat.move_D = get_mouse_pos(true);
+            transform.LookAt(get_mouse_pos(true));
+            mouse_ck = true;
+        }
+        rotation = Quaternion.LookRotation(player_stat.move_D);
     }
     public void on_Demege(float demege){
         
@@ -107,7 +108,6 @@ public class player : MonoBehaviour
         }
     }
     public Vector3 get_mouse_pos(bool target){
-        if(!player_stat.is_skill && !mouse_ck) mouse_ck = true;
         Vector3 input = Mouse.current.position.ReadValue();
         Ray ray = Camera.main.ScreenPointToRay(input);
         // Debug.DrawRay(ray.origin, ray.direction * 1000f, Color.blue, 5f);
@@ -136,5 +136,8 @@ public class player : MonoBehaviour
         for(float i = time; i>0 ;i-=Time.deltaTime)
                 yield return new WaitForSeconds(Time.deltaTime);
         player_stat.is_sturn = false;
+    }
+    private void OnTriggerStay(Collider other) {
+        
     }
 }

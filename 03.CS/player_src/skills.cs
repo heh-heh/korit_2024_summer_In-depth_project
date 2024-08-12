@@ -93,8 +93,8 @@ public class skills : MonoBehaviour
             for(float i = sk_manager.skill_dict[ID].before_delay; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);
         } 
-        sk_manager.use_skill(ID,gameObject);
         Debug.Log("ID : " + ID);
+        sk_manager.use_skill(ID,gameObject);
         if(sk_manager.skill_dict[ID].life_time > 0 && (sk_manager.skill_dict[ID].skill_type == 0 || sk_manager.skill_dict[ID].skill_type == 2)){
             for(float i = sk_manager.skill_dict[ID].life_time; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);

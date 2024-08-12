@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 
 public class bullet : MonoBehaviour
 {   
-    public skills_manager.skill skill_op;
+    public skills_stat.skill skill_op;
     public monster monster;
     public Vector3 moveD;
     bool HitCheck = true;
