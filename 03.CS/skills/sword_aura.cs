@@ -7,7 +7,7 @@ public class sword_aura : skills_manager
 {
     // Start is called before the first frame update
     
-    public skills_stat.skill skill_op;
+    public skill skill_op;
     public int skill_index;
 
     private Rigidbody rigid;

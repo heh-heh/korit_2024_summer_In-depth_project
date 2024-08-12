@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class demege_test : MonoBehaviour
@@ -25,10 +24,13 @@ public class demege_test : MonoBehaviour
             // sk_manager.use_skill(7,gameObject);
         }
     }
-    private void OnTriggerStay(Collider other) {
-        skill_stat2 skill_Stat = other.GetComponent<skill_stat2>();
-        if(skill_Stat != null){
-            Debug.Log("damage : " + skill_Stat.skill_op.demege);
+    private void OnTriggerEnter(Collider other) {
+        if(other.gameObject.tag == "sword"){
+            sword_aura test = other.GetComponent<sword_aura>();
+            if(test!=null){
+                Debug.Log("damage : " + test.skill_op.demege);
+                mon_stat.hp -= test.skill_op.demege;
+            }
         }
     }
     private void OnCollisionEnter(Collision other) {

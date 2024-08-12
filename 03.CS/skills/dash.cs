@@ -8,7 +8,7 @@ public class dash : MonoBehaviour
     public Vector3 TeleportAreaCenter;
     public Vector3 TeleportAreaSize;
     public Transform pc;
-    public skills_stat.skill skill_op;
+    public skills_manager.skill skill_op;
     public stats.stat stat;
     public int dash_type;   
     public LayerMask obstacleLayer;
@@ -17,7 +17,6 @@ public class dash : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        skill_op = GetComponent<skill_stat2>().skill_op;
         if(dash_type == 0) Destroy(this,skill_op.life_time);
         if(gameObject.tag == "Player"){
             player pc = gameObject.GetComponent<player>();
@@ -48,7 +47,7 @@ public class dash : MonoBehaviour
         ray_pos.Add(transform.position + Vector3.up * 1.5f);
         ray_pos.Add(transform.position + Vector3.up * 3f);
         foreach(Vector3 pos in ray_pos) {
-            Debug.DrawRay(pos, transform.forward * 1, Color.green);
+            Debug.DrawRay(pos, transform.forward * 5, Color.green);
             if(Physics.Raycast(pos,transform.forward,out RaycastHit hit, 1.5f)){
                 if(hit.collider.CompareTag("Wall")) is_boder = true;
                 
