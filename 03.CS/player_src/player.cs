@@ -17,6 +17,7 @@ public class player : MonoBehaviour
     quaternion move_buffer;
     Vector2 input;
     public bool is_boder;
+    public bool is_stun;
     public float max_HP = 100;
     private float speed2;
     void Awake()
@@ -52,12 +53,8 @@ public class player : MonoBehaviour
                 // move_rot();
             }
         }   
-        else if(player_stat.is_sturn){
-            
-        }
         else {
             player_stat.move_situation = 0;
-            
         }
     }
     void StopToWall()
@@ -129,7 +126,20 @@ public class player : MonoBehaviour
         }
     }
     private void OnCollisionEnter(Collision other) {
+        skills_manager.skill sk_op;
+        sk_op.demege = 0f; sk_op.sturn_time = 0f;
+        bullet sk1 = other.gameObject.GetComponent<bullet>();
+        sword_aura sk2 = other.gameObject.GetComponent<sword_aura>();
+        dash sk3 = other.gameObject.GetComponent<dash>();
         
+        if(other.gameObject.tag == "monster"){
+            if(sk2 != null) sk_op = sk2.skill_op;
+            else if(sk1 != null) sk_op = sk1.skill_op;
+            else if(sk3 != null) sk_op = sk3.skill_op;
+
+            player_stat.hp -= sk_op.demege;
+            StartCoroutine(strun(sk_op.sturn_time));
+        }
     }
     public IEnumerator strun(float time){
         player_stat.is_sturn = true;

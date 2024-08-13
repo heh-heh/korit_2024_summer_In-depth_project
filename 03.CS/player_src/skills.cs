@@ -44,7 +44,7 @@ public class skills : MonoBehaviour
         else if(co_time < 0){
             is_attect = false;
             attect_combo = 0;
-            animator.SetBool("s_at", is_attect);
+            
             animator.SetBool("attect", is_attect);
         }
     }
@@ -98,7 +98,7 @@ public class skills : MonoBehaviour
         if(sk_manager.skill_dict[ID].life_time > 0 && (sk_manager.skill_dict[ID].skill_type == 0 || sk_manager.skill_dict[ID].skill_type == 2)){
             for(float i = sk_manager.skill_dict[ID].life_time; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);
-        }
+        }animator.SetBool("s_at", false);
         pc.player_stat.is_skill = false;
         if(sk_manager.skill_dict[ID].after_delay > 0){
             for(float i = sk_manager.skill_dict[ID].after_delay; i>0 ;i-=0.1f)
