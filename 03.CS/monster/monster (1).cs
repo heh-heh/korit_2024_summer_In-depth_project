@@ -92,13 +92,19 @@ public class monster : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("bullet") || other.CompareTag("sword"))
-        {
-            HandleDamage();
-            if (other.CompareTag("sword"))
-            {
-                isSword = true;
-            }
+        skills_manager.skill sk_op;
+        sk_op.demege = 0f; sk_op.sturn_time = 0f;
+        bullet sk1 = other.gameObject.GetComponent<bullet>();
+        sword_aura sk2 = other.gameObject.GetComponent<sword_aura>();
+        dash sk3 = other.gameObject.GetComponent<dash>();
+        
+        if(other.gameObject.tag == "Player"){
+            if(sk2 != null) sk_op = sk2.skill_op;
+            else if(sk1 != null) sk_op = sk1.skill_op;
+            else if(sk3 != null) sk_op = sk3.skill_op;
+            Debug.Log("damage : " + sk_op.demege);
+            // player_stat.hp -= sk_op.demege;
+            // StartCoroutine(strun(sk_op.sturn_time));
         }
     }
     private void HandleDamage()

@@ -25,21 +25,20 @@ public class demege_test : MonoBehaviour
         }
     }
     private void OnTriggerEnter(Collider other) {
-        if(other.gameObject.tag == "sword"){
-            sword_aura test = other.GetComponent<sword_aura>();
-            if(test!=null){
-                Debug.Log("damage : " + test.skill_op.demege);
-                mon_stat.hp -= test.skill_op.demege;
-            }
-        }
+        // if(other.gameObject.tag == "sword"){
+        //     sword_aura test = other.GetComponent<sword_aura>();
+        //     if(test!=null){
+        //         Debug.Log("damage : " + test.skill_op.demege);
+        //         mon_stat.hp -= test.skill_op.demege;
+        //     }
+        // }
+        // if(other.gameObject.tag == "attect_ef"){
+        //     skills_ef sk_ef = other.gameObject.GetComponent<skills_ef>();
+        //     if(sk_ef.sk_op.demege > 0) Debug.Log("damage : " + sk_ef.sk_op.demege);
+        // }
     }
-    private void OnCollisionEnter(Collision other) {
-        if(other.gameObject.tag == "Player"){
-            dash test = other.gameObject.GetComponent<dash>();
-            if(test!=null && test.skill_op.demege > 0){
-                Debug.Log("damage : " + test.skill_op.demege);
-                // mon_stat.hp -= test.skill_op.demege;
-            }
-        }
+    public void on_damage(float demage){
+        
+        Debug.Log("Damage : " + demage);
     }
 }

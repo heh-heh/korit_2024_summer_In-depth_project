@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using Unity.VisualScripting;
 using NUnit.Framework;
+// using System.Numerics;
 
 
 
@@ -15,23 +16,24 @@ public class skills_manager : MonoBehaviour
     [Serializable] 
     public struct skill{
         public string ID;
-        public GameObject skills_obj;//½ºÅ³ ¿ÀºêÁ§Æ®
-        public Vector3 skills_size;//½ºÅ³ ¿ÀºêÁ§Æ® Å©±â
+        public GameObject skills_obj;//ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®
+        public Vector3 skills_size;//ï¿½ï¿½Å³ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® Å©ï¿½ï¿½
         public bool none_attect;
-        public int skill_type;//½ºÅ³ Å¸ÀÔ
-        public float demege;//µ¥¹ÌÁö
-        public float speed;//¼Óµµ
-        public float life_time;//½ÇÇà½Ã°£
-        public float cool_time;//ÄðÅ¸ÀÓ
-        public float before_delay;//Àü µô·¹ÀÌ
-        public float after_delay;//ÈÄ µô·¹ÀÌ
+        public int skill_type;//ï¿½ï¿½Å³ Å¸ï¿½ï¿½
+        public float demege;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        public float speed;//ï¿½Óµï¿½
+        public float life_time;//ï¿½ï¿½ï¿½ï¿½Ã°ï¿½
+        public float cool_time;//ï¿½ï¿½Å¸ï¿½ï¿½
+        public float before_delay;//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        public float after_delay;//ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         public float sturn_time;
-        public bool Penetrated; //°üÅë ¿©ºÎ
-        public int count;//°¹¼ö
-        public int delay;//µô·¹ÀÌ?
-        public GameObject target_ting;//À¯µ¿ÀûÀ¸·Î »ç¿ëÇÒ Å¸ÄÏ
-        public GameObject sp_pos;//»ç¿ëÇÒ ¿ÀºêÁ§Æ® or ½ºÆù À§Ä¡
+        public bool Penetrated; //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        public int count;//ï¿½ï¿½ï¿½ï¿½
+        public float delay;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?
+        public GameObject target_ting;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
+        public GameObject sp_pos;//ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® or ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
         public Vector3 sp_pos2;
+        public float sp_rot;
         public string next_at_ID;
     }
     public List<Vector3> temp = new List<Vector3>();
@@ -41,7 +43,7 @@ public class skills_manager : MonoBehaviour
     
     public Dictionary<string,skill> skill_dict = new Dictionary<string,skill>();
     [Space(20f)]
-    private Dictionary<string, float> cooldownTimers;
+    public Dictionary<string, float> cooldownTimers;
     // public skiils skiils_option;
     void Start()
     {
@@ -67,18 +69,18 @@ public class skills_manager : MonoBehaviour
         skill skill_op = skill_dict[ID];
         if(cooldownTimers[skill_op.ID] <= 0){
             cooldownTimers[skill_op.ID] = skill_op.cool_time;
-            if(skill_op.skill_type == 0){ //±ÙÁ¢ ½ºÅ³
+            if(skill_op.skill_type == 0){ //ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Å³
                 if(skill_op.sp_pos.GetComponent<sword_aura>() == null && skill_op.skills_obj == null){
                     sword_aura sw_test = skill_op.sp_pos.AddComponent<sword_aura>();
                     sw_test.skill_op = skill_op;
                 } 
-                else{
+                else if(ID != "101-0"){
                     float agl = 0;
                     if(skill_op.count > 1) agl = 360 / skill_op.count;
                     for(int i=0; i<skill_op.count; i++){
                         Quaternion t_rot = Quaternion.Euler(new Vector3(
                             0f,
-                            skill_op.sp_pos.transform.rotation.eulerAngles.y+(agl*i),
+                            skill_op.sp_pos.transform.rotation.eulerAngles.y+(agl*i) + skill_op.sp_rot ,
                             0
                         ));
                         Vector3 t_pos = new Vector3(
@@ -86,14 +88,16 @@ public class skills_manager : MonoBehaviour
                             skill_op.sp_pos.transform.position.y + skill_op.sp_pos2.y,
                             skill_op.sp_pos.transform.position.z+(skill_op.sp_pos2.z * Mathf.Sin((t_rot.eulerAngles.y+90)*(Mathf.PI / 180)))
                         );
+                        // Invoke(test2(t_pos,t_rot,skill_op,0f),skill_op.delay);
+                        // StartCoroutine(test2(t_pos,t_rot,skill_op,skill_op.delay));
                         GameObject skills_sp_obj = Instantiate(skill_op.skills_obj,  t_pos, t_rot);
-                        sword_aura sword_Aura = skills_sp_obj.AddComponent<sword_aura>();
-                        sword_Aura.skill_op = skill_op;
+                        skills_ef sword_Aura = skills_sp_obj.AddComponent<skills_ef>();
+                        sword_Aura.sk_op = skill_op;
                     }
                 }
                 // sw_test.skill_op = skills[skill_index];
             }
-            else if(skill_op.skill_type == 1){//¿ø°Å¸® ½ºÅ³
+            else if(skill_op.skill_type == 1){//ï¿½ï¿½ï¿½Å¸ï¿½ ï¿½ï¿½Å³
                 Quaternion t_rot = Quaternion.Euler(new Vector3(
                     0f,
                     skill_op.sp_pos.transform.rotation.eulerAngles.y,
@@ -110,6 +114,17 @@ public class skills_manager : MonoBehaviour
                 bullet_obj.transform.localScale = skill_op.skills_size;
             }
             else if(skill_op.skill_type == 2){
+                if(skill_op.skills_obj != null ) {
+                    Quaternion t_rot = Quaternion.Euler(new Vector3(0f,skill_op.sp_pos.transform.rotation.eulerAngles.y,0));
+                    Vector3 t_pos = new Vector3(
+                        skill_op.sp_pos.transform.position.x+(skill_op.sp_pos2.x * MathF.Cos((t_rot.eulerAngles.y-90)*(Mathf.PI / 180))),
+                        skill_op.sp_pos.transform.position.y + skill_op.sp_pos2.y,
+                        skill_op.sp_pos.transform.position.z+(skill_op.sp_pos2.z * Mathf.Sin((t_rot.eulerAngles.y+90)*(Mathf.PI / 180)))
+                    );
+                    GameObject sk_ef = Instantiate(skill_op.skills_obj,t_pos,t_rot);
+                    skills_ef sk_ef2 = sk_ef.AddComponent<skills_ef>();
+                    sk_ef2.sk_op = skill_op; sk_ef2.truk = true;
+                }
                 dash dash = skill_op.sp_pos.AddComponent<dash>();
                 dash.skill_op = skill_op; dash.dash_type = 0;
             }
@@ -130,28 +145,12 @@ public class skills_manager : MonoBehaviour
         }
         return 0;
     }
-}
-
-public class skiils_option : MonoBehaviour
-{
-    public struct skill{
-        public string ID;
-        public GameObject skills_obj;//½ºÅ³ ¿ÀºêÁ§Æ®
-        public Vector3 skills_size;//½ºÅ³ ¿ÀºêÁ§Æ® Å©±â
-        public bool none_attect;
-        public int skill_type;//½ºÅ³ Å¸ÀÔ
-        public float demege;//µ¥¹ÌÁö
-        public float speed;//¼Óµµ
-        public float life_time;//½ÇÇà½Ã°£
-        public float cool_time;//ÄðÅ¸ÀÓ
-        public float before_delay;//Àü µô·¹ÀÌ
-        public float after_delay;//ÈÄ µô·¹ÀÌ
-        public bool Penetrated; //°üÅë ¿©ºÎ
-        public int count;//°¹¼ö
-        public int delay;//µô·¹ÀÌ?
-        public GameObject target_ting;//À¯µ¿ÀûÀ¸·Î »ç¿ëÇÒ Å¸ÄÏ
-        public GameObject sp_pos;//»ç¿ëÇÒ ¿ÀºêÁ§Æ® or ½ºÆù À§Ä¡
-        public Vector3 sp_pos2;
-        public string next_at_ID;
+    public IEnumerator test2(Vector3 t_pos, Quaternion t_rot, skill sk_op, float time){
+        Debug.Log("test test");
+        for(float i = time; i>0 ;i-=0.1f)
+                yield return new WaitForSeconds(0.1f);
+        GameObject skills_sp_obj = Instantiate(sk_op.skills_obj,  t_pos, t_rot);
+        skills_ef sword_Aura = skills_sp_obj.AddComponent<skills_ef>();
+        sword_Aura.sk_op = sk_op;
     }
 }

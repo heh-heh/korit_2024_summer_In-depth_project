@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Diagnostics.Tracing;
 
 // using System.Numerics;
@@ -17,6 +18,7 @@ public class skills : MonoBehaviour
 {
     public stats.stat player_stat;
     public skills_manager sk_manager;
+    public skills_manager.skill sk_op;
     public int attect_combo = 0;
     public bool is_delay;
     public bool is_attect;
@@ -26,7 +28,8 @@ public class skills : MonoBehaviour
     player pc;
     public List<string> skill_ID = new List<string>();
 
-
+    bool test1=false;
+    public Vector3 sp_pos2;
     
     // Start is called before the first frame update
     void Start()
@@ -44,17 +47,19 @@ public class skills : MonoBehaviour
         else if(co_time < 0){
             is_attect = false;
             attect_combo = 0;
-            
+            sk_manager.cooldownTimers[skill_ID[attect_combo]] = 0;
+            animator.SetBool("s_at", false);
             animator.SetBool("attect", is_attect);
         }
     }
 
     
     public void on_attack(InputAction.CallbackContext context){
-        if (context.performed && !player_stat.is_skill) {
+        if (context.performed && !player_stat.is_skill && sk_manager.cooldownTimers[skill_ID[attect_combo]] <= 0) {
             if (context.interaction is PressInteraction) {
                 is_attect = true;
                 if (attect_combo <= 0) {
+                    StartCoroutine(dash_at(sk_manager.skill_dict[skill_ID[attect_combo]].life_time * 0.1f));
                     animator.SetBool("s_at", true);
                 }
                 if(co_time > 0) {
@@ -63,8 +68,9 @@ public class skills : MonoBehaviour
                     animator.SetBool("attect", true);
                     animator.SetTrigger("next_at");
                 }
+                StartCoroutine(dash_at(0.4f));
                 StartCoroutine(use_Skills_delay(skill_ID[attect_combo]));
-                co_time = (sk_manager.skill_dict[skill_ID[attect_combo]].after_delay+sk_manager.skill_dict[skill_ID[attect_combo]].life_time)*attect_delay;
+                co_time = (sk_manager.skill_dict[skill_ID[attect_combo]].before_delay+sk_manager.skill_dict[skill_ID[attect_combo]].after_delay+sk_manager.skill_dict[skill_ID[attect_combo]].life_time)*attect_delay;
                 attect_combo = attect_combo >= 2 ? 0 : attect_combo + 1;
             }
         }
@@ -98,7 +104,7 @@ public class skills : MonoBehaviour
         if(sk_manager.skill_dict[ID].life_time > 0 && (sk_manager.skill_dict[ID].skill_type == 0 || sk_manager.skill_dict[ID].skill_type == 2)){
             for(float i = sk_manager.skill_dict[ID].life_time; i>0 ;i-=0.1f)
                 yield return new WaitForSeconds(0.1f);
-        }animator.SetBool("s_at", false);
+        }
         pc.player_stat.is_skill = false;
         if(sk_manager.skill_dict[ID].after_delay > 0){
             for(float i = sk_manager.skill_dict[ID].after_delay; i>0 ;i-=0.1f)
@@ -112,14 +118,37 @@ public class skills : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
         player_stat.is_dash = false;
         animator.SetBool("dash",false);
-
+    }
+    public IEnumerator dash_at(float time){
+        animator.SetBool("dash_at",true);  
+        for(float i = time; i>0 ;i-=0.1f)
+                yield return new WaitForSeconds(0.1f);
+        animator.SetBool("dash_at",false);
     }
     public IEnumerator attect_ck(){
         // animator.SetBool("s_at",true);
         for(; co_time>0 ;co_time-=0.1f){
             yield return new WaitForSeconds(0.1f);
         }
-        // 공격 종료 처리
+    }
+    public IEnumerator dash_ef(float time){
+        for(float i = time; i>0 ;i-=0.1f)
+                yield return new WaitForSeconds(0.1f);
+                
+        sk_op = sk_manager.skill_dict[skill_ID[0]];
+        Quaternion t_rot = Quaternion.Euler(new Vector3(
+            0f,
+            sk_op.sp_pos.transform.rotation.eulerAngles.y + sk_op.sp_rot ,
+            0
+        ));
+        Vector3 t_pos = new Vector3(
+            sk_op.sp_pos.transform.position.x+(sk_op.sp_pos2.x * MathF.Cos((t_rot.eulerAngles.y-90)*(Mathf.PI / 180))),
+            sk_op.sp_pos.transform.position.y + sk_op.sp_pos2.y,
+            sk_op.sp_pos.transform.position.z+(sk_op.sp_pos2.z * Mathf.Sin((t_rot.eulerAngles.y+90)*(Mathf.PI / 180)))
+        );
+        GameObject sk_ef = Instantiate(sk_op.skills_obj,t_pos,t_rot);
+        skills_ef sk_ef2 = sk_ef.AddComponent<skills_ef>();
+        sk_ef2.sk_op = sk_op;
         
     }
 }

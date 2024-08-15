@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 using TMPro;
 
 public class gamemanager : MonoBehaviour
@@ -19,6 +20,7 @@ public class gamemanager : MonoBehaviour
 
     public static bool GameOver = false;
     public float time;
+    
     void Start()
     {
         player_c = GameObject.FindGameObjectWithTag("Player");
